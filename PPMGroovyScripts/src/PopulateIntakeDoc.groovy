@@ -1,3 +1,5 @@
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import word.utils.Utils;
 import word.w2004.elements.Table
 import word.w2004.elements.tableElements.TableEle;
@@ -21,20 +23,26 @@ def projectDocumentFolder =  projectRoot + "/" + projectName + "/Documents";
 
  xmlTemplate = Utils.readFile(projectDocumentFolder + "/" + projectIntakeDocName);
  
- Table tbl = new Table();
- tbl.addTableEle(TableEle.TH, "Jira Number", "Description"); 
+ 
  
  xmlTemplate = replacePh(xmlTemplate, "ppmAppName", projectName);
  xmlTemplate = replacePh(xmlTemplate, "ppmAppManufacturer", projectDiscription);
  xmlTemplate = replacePh(xmlTemplate, "ppmAppVersion", projectIntakeDocName);
  
  
+ Table tbl = new Table();
+ tbl.addTableEle(TableEle.TH, "Jira Number", "Description");
+ tbl.addTableEle(TableEle.TD, "J2W-1234", "Read Templates nicelly");
+ xmlTemplate = replacePh(xmlTemplate, "ppmChangeLog", tbl.getContent());
  
 //Save Document
 
- newDoc = new File(projectDocumentFolder + "/n" + projectIntakeDocName); 
+ File tempFile = File.createTempFile("ppm", ".doc");
+ tempFile << xmlTemplate;
  
- newDoc << xmlTemplate
+ Files.copy(tempFile.toPath(), new File(projectDocumentFolder + "/" + projectIntakeDocName).toPath(), StandardCopyOption.REPLACE_EXISTING );
+ tempFile.delete();
+
  
 ////////////////Subs///////////////
 
