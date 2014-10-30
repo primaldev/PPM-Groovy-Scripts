@@ -3,6 +3,7 @@ import java.util.zip.ZipFile
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import org.w3c.dom.Document;
+import org.primaldev.appv.ParseAppvManifest
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -42,7 +43,8 @@ private void extractAppvInfo(String appvPackage) {
             parseFileMetaData(zipFile.getInputStream(entry));            
         }
         if (entry.name.equalsIgnoreCase("AppxManifest.xml")){
-            parseAppxManifest(zipFile.getInputStream(entry));
+            //parseAppxManifest(zipFile.getInputStream(entry));
+			ParseAppvManifest parseAppvManifest = new ParseAppvManifest(zipFile.getInputStream(entry));
         }
         
         //InputStream stream = zipFile.getInputStream(entry);
