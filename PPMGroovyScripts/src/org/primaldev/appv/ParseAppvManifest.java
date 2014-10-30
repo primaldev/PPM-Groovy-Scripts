@@ -22,6 +22,8 @@ import org.xml.sax.SAXException;
 public class ParseAppvManifest {
 	
 	InputStream xmlInput;
+	Collection<AppvShortCut> appvShortcuts;
+	Collection<AppvAppPath> appvAppPaths;
 	
 	public ParseAppvManifest(InputStream xmlInput) {
 		this.xmlInput = xmlInput;
@@ -46,13 +48,21 @@ public class ParseAppvManifest {
 		}
 	}
 	
+	public Collection<AppvShortCut> getAppvShortcuts() {
+		return appvShortcuts;
+	}
+	
+	public Collection<AppvAppPath> getAppvAppPath() {
+		return appvAppPaths;
+	}
+	
 	private void parseXml() throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		
 	    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	    Document doc = dBuilder.parse(xmlInput);
 	     
-	    Element element = doc.getDocumentElement();
+	    
 	    NodeList nList = doc.getElementsByTagName("Package");
 	    
 	    for (int i = 0; i < nList.getLength(); i++) {
@@ -73,7 +83,7 @@ public class ParseAppvManifest {
 
 	 
 	private void parseAppvExtensions(Node node) {   
-		    NamedNodeMap atttrib = node.getAttributes();    
+		   
 		    if (node.hasChildNodes()) {
 		    	NodeList childNodes = node.getChildNodes();
 		    	for (int i = 0; i < childNodes.getLength(); i++) {
@@ -81,23 +91,57 @@ public class ParseAppvManifest {
 		            if (childNodes.item(i).hasAttributes()){
 		                Element eElement = (Element) childNodes.item(i);
 		                String attrib  = eElement.getAttribute("Category");
-		                //print attrib + "\n";
+		                
 		                if (attrib.equalsIgnoreCase("AppV.Shortcut")){
 		                    parseAppvShortcuts(eElement.getChildNodes());
 		                }
+		                
+		                if (attrib.equalsIgnoreCase("AppV.AppPath")){
+		                	parseAppvAppPath(eElement.getFirstChild());
+		                }
+		                
+		                
 		            }            
 		        }
 		   }
 		  
 		}
+	
+	private void parseAppvAppPath(Node firstchildnode) {	
+		if (firstchildnode !=null && firstchildnode.hasChildNodes()) {
+			NodeList lnode = firstchildnode.getChildNodes();
+			appvAppPaths = new ArrayList<AppvAppPath>();			
+			for (int i = 0; i < lnode.getLength(); i++) {
+				AppvAppPath appvAppPath = new AppvAppPath();
+				
+				if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:Name")){
+					appvAppPath.setName(lnode.item(i).getTextContent());
+				}
+				
+				if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:ApplicationPath")){
+					appvAppPath.setApplicationPath(lnode.item(i).getTextContent());
+				}
+				
+				if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:PATHEnvironmentVariablePrefix")){
+					appvAppPath.setPATHEnvironmentVariablePrefix(lnode.item(i).getTextContent());
+				}
+				
+				if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:ApplicationId")){
+					appvAppPath.setApplicationId(lnode.item(i).getTextContent());
+				}				
+				
+				appvAppPaths.add(appvAppPath);
+			}
+			
+			
+		}		
+		
+	}
 
 
 		private void parseAppvShortcuts(NodeList subnode){
-		    //printNote(subnode);
 		    
-		    //using an class instead of writing directly to the document,
-		    //just in case another doc API is needed in the future
-		    Collection<AppvShortCut> appvShortcuts = new ArrayList<AppvShortCut>();
+		    appvShortcuts = new ArrayList<AppvShortCut>();
 		   for (int i = 0; i < subnode.getLength(); i++) { 
 		   
 			   	if (subnode.item(i).hasChildNodes()) {    
@@ -107,25 +151,25 @@ public class ParseAppvManifest {
 		                                 
 						   
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:File")){
-		                       AppvShortCut.setFile(lnode.item(y).getTextContent());
+		                       appvShortcut.setFile(lnode.item(y).getTextContent());
 		                   }                   
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:Target")){
-		                       AppvShortCut.setTarget(lnode.item(y).getTextContent());
+		                       appvShortcut.setTarget(lnode.item(y).getTextContent());
 		                   }
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:Icon")){
-		                       AppvShortCut.setIcon(lnode.item(y).getTextContent());
+		                       appvShortcut.setIcon(lnode.item(y).getTextContent());
 		                   }
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:Arguments")){
-		                       AppvShortCut.setArguments(lnode.item(y).getTextContent());
+		                       appvShortcut.setArguments(lnode.item(y).getTextContent());
 		                   }
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:WorkingDirectory")){
-		                       AppvShortCut.setWorkingDirectory(lnode.item(y).getTextContent());
+		                       appvShortcut.setWorkingDirectory(lnode.item(y).getTextContent());
 		                   }
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:ShowCommand")){
-		                       AppvShortCut.setShowCommand(Boolean.valueOf(lnode.item(y).getTextContent()));
+		                       appvShortcut.setShowCommand(Boolean.valueOf(lnode.item(y).getTextContent()));
 		                   }
 		                 
-		                  // print "Gs "  + lnode.getNodeName() + ":" + lnode.getTextContent() + "\n";                   
+		                  //System.out.print("Gs "  + lnode.item(y).getNodeName() + ":" + lnode.item(y).getTextContent() + "\n");                   
 		                   
 		               }   
 					   appvShortcuts.add(appvShortcut);

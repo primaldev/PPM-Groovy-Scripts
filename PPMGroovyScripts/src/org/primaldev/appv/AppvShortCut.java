@@ -13,43 +13,43 @@ public class AppvShortCut {
 			// TODO Auto-generated constructor stub
 		}
 	    
-	    public static void setFile(String file) {
+	    public void setFile(String file) {
 	        File = file;
 	    }
 	    
-	    public static void setArguments(String arguments) {
+	    public void setArguments(String arguments) {
 	        Arguments = arguments;
 	    }
-	    public static void setIcon(String icon) {
+	    public  void setIcon(String icon) {
 	        Icon = icon;
 	    }
-	    public static void setShowCommand(boolean showCommand) {
+	    public void setShowCommand(boolean showCommand) {
 	        ShowCommand = showCommand;
 	    }
-	    public static void setTarget(String target) {
+	    public void setTarget(String target) {
 	        Target = target;
 	    }
-	    public static void setWorkingDirectory(String workingDirectory) {
+	    public void setWorkingDirectory(String workingDirectory) {
 	        WorkingDirectory = workingDirectory;
 	    }
 	        
-	    public static String getWorkingDirectory() {
+	    public  String getWorkingDirectory() {
 	        return WorkingDirectory;
 	    } 
 	    
-	    public static String getFile() {
+	    public String getFile() {
 	        return File;
 	    }
-	    public static String getArguments() {
+	    public  String getArguments() {
 	        return Arguments;
 	    }
-	    public static String getIcon() {
+	    public String getIcon() {
 	        return Icon;
 	    }
-	    public static String getTarget() {
+	    public  String getTarget() {
 	        return Target;
 	    }
-	    public static boolean isShowCommand() {
+	    public boolean isShowCommand() {
 	        return ShowCommand;
 	    }
 	    

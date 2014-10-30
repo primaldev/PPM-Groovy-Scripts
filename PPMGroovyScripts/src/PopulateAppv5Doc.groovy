@@ -3,6 +3,7 @@ import java.util.zip.ZipFile
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import org.w3c.dom.Document;
+import org.primaldev.appv.AppvShortCut
 import org.primaldev.appv.ParseAppvManifest
 import org.w3c.dom.NamedNodeMap
 import org.w3c.dom.NodeList;
@@ -17,10 +18,6 @@ String projectFolder = "D:/dev/projects/Application_Test-11.3-W7-x64"; //get fro
 String appvFolder = "D:/dev/projects/Application_Test-11.3-W7-x64/Deploy/APPV/1.0";
 appvPackage = appvFolder + "/Photoshop-CS6-01.appv";
 //////////////////////////////////////////////////////////////
-
-
-
-
 
 //////////////////////////////////////////////////////////////
 
@@ -45,105 +42,14 @@ private void extractAppvInfo(String appvPackage) {
         if (entry.name.equalsIgnoreCase("AppxManifest.xml")){
             //parseAppxManifest(zipFile.getInputStream(entry));
 			ParseAppvManifest parseAppvManifest = new ParseAppvManifest(zipFile.getInputStream(entry));
+			InnerValues.setAppvShorcuts(parseAppvManifest.getAppvShortcuts());
         }
         
         //InputStream stream = zipFile.getInputStream(entry);
-    }
-    
-    
+    }        
 
 }
 
-private void parseAppxManifest(InputStream stream){
-    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-    Document doc = dBuilder.parse(stream);
-     
-    Element element = doc.getDocumentElement();
-    stream.close();
-    
-    NodeList nList = doc.getElementsByTagName("Package");
-    
-    for ( Node node : nList) {
-        if(node.hasChildNodes()){
-            NodeList childNodes = node.getChildNodes();
-                for (Node cnode : childNodes) {    
-                    if (cnode.getNodeName().equalsIgnoreCase("appv:Extensions")) {
-                        parseAppvExtensions(cnode);
-                    }
-                    
-                }            
-        }
-        
-    }
-    
-    //printNote(nList);
-    
-    
-}
-
-
-private void parseAppvExtensions(Node node) {   
-   NamedNodeMap atttrib = node.getAttributes();    
-    if (node.hasChildNodes()) {
-        for (Node gnode : node.getChildNodes()) {
-            if (gnode.hasAttributes()){
-                Element eElement = (Element) gnode;
-                String attrib  = eElement.getAttribute("Category");
-                //print attrib + "\n";
-                if (attrib.equalsIgnoreCase("AppV.Shortcut")){
-                    parseAppvShortcuts(eElement.childNodes);
-                }
-            }            
-        }
-   }
-  
-}
-
-
-private void parseAppvShortcuts(NodeList subnode){
-    //printNote(subnode);
-    
-    //using an class instead of writing directly to the document,
-    //just in case another doc API is needed in the future
-    Collection<AppvShortcut> appvShortcuts = new ArrayList<AppvShortcut>();
-    
-   for (Node snode: subnode){
-	   	if (snode.hasChildNodes()) {    
-			   AppvShortcut appvShortcut = new AppvShortcut();
-               for(Node lnode : snode.getChildNodes()){                   
-				   
-                   if(lnode.getNodeName().equalsIgnoreCase("appv:File")){
-                       appvShortcut.setFile(lnode.getTextContent());
-                   }                   
-                   if(lnode.getNodeName().equalsIgnoreCase("appv:Target")){
-                       appvShortcut.setTarget(lnode.getTextContent());
-                   }
-                   if(lnode.getNodeName().equalsIgnoreCase("appv:Icon")){
-                       appvShortcut.setIcon(lnode.getTextContent());
-                   }
-                   if(lnode.getNodeName().equalsIgnoreCase("appv:Arguments")){
-                       appvShortcut.setArguments(lnode.getTextContent());
-                   }
-                   if(lnode.getNodeName().equalsIgnoreCase("appv:WorkingDirectory")){
-                       appvShortcut.setWorkingDirectory(lnode.getTextContent());
-                   }
-                   if(lnode.getNodeName().equalsIgnoreCase("appv:ShowCommand")){
-                       appvShortcut.setShowCommand(Boolean.valueOf(lnode.getTextContent()));
-                   }
-                 
-                  // print "Gs "  + lnode.getNodeName() + ":" + lnode.getTextContent() + "\n";                   
-                   
-               }   
-			   appvShortcuts.add(appvShortcut);
-			   print appvShortcut.getFile() + "\n";
-			   
-	   	}
-   }
-   InnerValues.setAppvShorcuts(appvShortcuts);
-   
-    
-}
 
 
 private void parseFileMetaData(InputStream stream) {
@@ -166,7 +72,7 @@ private void parseFileMetaData(InputStream stream) {
 
  class InnerValues {
     static String appvMountRoot
-    static Collection<AppvShortcut> appvShorcuts;
+    static Collection<AppvShortCut> appvShorcuts;
     
     
     public static void setAppvMountRoot(String appvMountRoot) {
@@ -177,66 +83,16 @@ private void parseFileMetaData(InputStream stream) {
         return appvMountRoot;
     }
     
-    public static Collection<AppvShortcut> getAppvShorcuts() {
+    public static Collection<AppvShortCut> getAppvShorcuts() {
         return appvShorcuts;
     }
-    public static void setAppvShorcuts(Collection<AppvShortcut> appvShorcuts) {
+    public static void setAppvShorcuts(Collection<AppvShortCut> appvShorcuts) {
        this.appvShorcuts = appvShorcuts;
     }
     
 }
  
- class AppvShortcut {
-    static String File;  //the actual lnk file
-    static String Target;
-    static String Icon;
-    static String Arguments;
-    static String WorkingDirectory;
-    static boolean ShowCommand;
-    
-    public static void setFile(String file) {
-        File = file;
-    }
-    
-    public static void setArguments(String arguments) {
-        Arguments = arguments;
-    }
-    public static void setIcon(String icon) {
-        Icon = icon;
-    }
-    public static void setShowCommand(boolean showCommand) {
-        ShowCommand = showCommand;
-    }
-    public static void setTarget(String target) {
-        Target = target;
-    }
-    public static void setWorkingDirectory(String workingDirectory) {
-        WorkingDirectory = workingDirectory;
-    }
-        
-    public static String getWorkingDirectory() {
-        return WorkingDirectory;
-    } 
-    
-    public static String getFile() {
-        return File;
-    }
-    public static String getArguments() {
-        return Arguments;
-    }
-    public static String getIcon() {
-        return Icon;
-    }
-    public static String getTarget() {
-        return Target;
-    }
-    public static boolean isShowCommand() {
-        return ShowCommand;
-    }
-    
-    
-      
- }
+ 
 
  //For testing
 private static void printNote(NodeList nodeList) {
