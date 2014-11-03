@@ -21,10 +21,25 @@ import org.xml.sax.SAXException;
 
 public class ParseAppvManifest {
 	
-	InputStream xmlInput;
-	Collection<AppvShortCut> appvShortcuts;
-	Collection<AppvAppPath> appvAppPaths;
-	Collection<AppvFileTypeAssociation> appvFileTypeAssociations;
+	private String appvPublisher;
+	private String Name;
+	private String packageVersion;
+	private String appvPackageId;
+	private String appvVersionId;
+	private String displayName;
+	private String publisherDisplayName;
+	private String description;
+	private String appVPackageDescription;
+	private Boolean FullVFSWriteMode;
+	private String  language;
+	private String oSMinVersion;
+	private String oSMaxVersionTested;
+	private String sequencingStationProcessorArchitecture;
+	
+	private InputStream xmlInput;
+	private Collection<AppvShortCut> appvShortcuts;
+	private Collection<AppvAppPath> appvAppPaths;
+	private Collection<AppvFileTypeAssociation> appvFileTypeAssociations;
 	
 	String appvCOMMode;
 	boolean ComModeOutOfProcessEnabled;
@@ -56,47 +71,129 @@ public class ParseAppvManifest {
 	
 	
 	
+	public String getAppvPublisher() {
+		return appvPublisher;
+	}
+	public void setAppvPublisher(String appvPublisher) {
+		this.appvPublisher = appvPublisher;
+	}
+	public String getName() {
+		return Name;
+	}
+	public void setName(String name) {
+		Name = name;
+	}
+	public String getPackageVersion() {
+		return packageVersion;
+	}
+	public void setPackageVersion(String packageVersion) {
+		this.packageVersion = packageVersion;
+	}
+	public String getAppvPackageId() {
+		return appvPackageId;
+	}
+	public void setAppvPackageId(String appvPackageId) {
+		this.appvPackageId = appvPackageId;
+	}
+	public String getAppvVersionId() {
+		return appvVersionId;
+	}
+	public void setAppvVersionId(String appvVersionId) {
+		this.appvVersionId = appvVersionId;
+	}
+	public String getDisplayName() {
+		return displayName;
+	}
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+	public String getPublisherDisplayName() {
+		return publisherDisplayName;
+	}
+	public void setPublisherDisplayName(String publisherDisplayName) {
+		this.publisherDisplayName = publisherDisplayName;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getAppVPackageDescription() {
+		return appVPackageDescription;
+	}
+	public void setAppVPackageDescription(String appVPackageDescription) {
+		this.appVPackageDescription = appVPackageDescription;
+	}
+	public Boolean getFullVFSWriteMode() {
+		return FullVFSWriteMode;
+	}
+	public void setFullVFSWriteMode(Boolean fullVFSWriteMode) {
+		FullVFSWriteMode = fullVFSWriteMode;
+	}
+	public String getLanguage() {
+		return language;
+	}
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	public String getoSMinVersion() {
+		return oSMinVersion;
+	}
+	public void setoSMinVersion(String oSMinVersion) {
+		this.oSMinVersion = oSMinVersion;
+	}
+	public String getoSMaxVersionTested() {
+		return oSMaxVersionTested;
+	}
+	public void setoSMaxVersionTested(String oSMaxVersionTested) {
+		this.oSMaxVersionTested = oSMaxVersionTested;
+	}
+	public String getSequencingStationProcessorArchitecture() {
+		return sequencingStationProcessorArchitecture;
+	}
+	public void setSequencingStationProcessorArchitecture(
+			String sequencingStationProcessorArchitecture) {
+		this.sequencingStationProcessorArchitecture = sequencingStationProcessorArchitecture;
+	}
+	public Collection<AppvAppPath> getAppvAppPaths() {
+		return appvAppPaths;
+	}
+	public void setAppvAppPaths(Collection<AppvAppPath> appvAppPaths) {
+		this.appvAppPaths = appvAppPaths;
+	}
+	public Collection<AppvFileTypeAssociation> getAppvFileTypeAssociations() {
+		return appvFileTypeAssociations;
+	}
+	public void setAppvFileTypeAssociations(
+			Collection<AppvFileTypeAssociation> appvFileTypeAssociations) {
+		this.appvFileTypeAssociations = appvFileTypeAssociations;
+	}
+
+	public void setAppvShortcuts(Collection<AppvShortCut> appvShortcuts) {
+		this.appvShortcuts = appvShortcuts;
+	}
 	public String getAppvCOMMode() {
 		return appvCOMMode;
 	}
 
-
-
-
 	public void setAppvCOMMode(String appvCOMMode) {
 		this.appvCOMMode = appvCOMMode;
 	}
-
-
-
-
 	public boolean isComModeOutOfProcessEnabled() {
 		return ComModeOutOfProcessEnabled;
 	}
 
-
-
-
 	public void setComModeOutOfProcessEnabled(boolean comModeOutOfProcessEnabled) {
 		ComModeOutOfProcessEnabled = comModeOutOfProcessEnabled;
 	}
-
-
-
-
 	public boolean isComModeInProcessEnabled() {
 		return ComModeInProcessEnabled;
 	}
 
-
-
-
 	public void setComModeInProcessEnabled(boolean comModeInProcessEnabled) {
 		ComModeInProcessEnabled = comModeInProcessEnabled;
 	}
-
-
-
 
 	public Collection<AppvShortCut> getAppvShortcuts() {
 		return appvShortcuts;
@@ -119,13 +216,18 @@ public class ParseAppvManifest {
 	    
 	        if(nList.item(i).hasChildNodes()){
 	            NodeList childNodes = nList.item(i).getChildNodes();
-	            for (int y = 0; y < childNodes.getLength(); y++) {	                    
+	            for (int y = 0; y < childNodes.getLength(); y++) {
+                    	if (childNodes.item(y).getNodeName().equalsIgnoreCase("Identity")) {
+                    		parseIdentity(childNodes.item(y));                    	
+                    	}
+	            	
 	                    if (childNodes.item(y).getNodeName().equalsIgnoreCase("appv:Extensions")) {
 	                        parseAppvExtensions(childNodes.item(y));
 	                    }
 	                    if (childNodes.item(y).getNodeName().equalsIgnoreCase("appv:ExtensionsConfiguration")) {
 	                    	parseAppvExtensionsConfiguration(childNodes.item(y).getChildNodes().item(1));
 	                    }
+	                                     
 	                }            
 	        }
 	        
@@ -134,6 +236,9 @@ public class ParseAppvManifest {
 	}
 
 	 
+	private void parseIdentity(Node node){
+		
+	}
 	private void parseAppvExtensions(Node node) {   
 		   
 		    if (node.hasChildNodes()) {
@@ -164,14 +269,26 @@ public class ParseAppvManifest {
 		  
 		}
 	
-	private void parseAppvExtensionsConfiguration(Node node){
-		System.out.print(node.getChildNodes().item(1).getNodeName());
+	private String getAttribByName(Node node, String attribName) {
+		
 		if (node.hasAttributes()){
 			Element eElement = (Element) node;
-			this.setAppvCOMMode(eElement.getAttribute("Mode"));
-			
-			
+			return eElement.getAttribute(attribName);
 		}
+		return null;
+		
+		
+	}
+	
+	private void parseAppvExtensionsConfiguration(Node node){
+		
+		this.setAppvCOMMode(getAttribByName(node, "Mode"));
+		System.out.print(node.getNodeName());
+		System.out.print(node.getChildNodes().item(1).getNodeName());
+		this.setComModeInProcessEnabled(Boolean.valueOf(getAttribByName(node.getChildNodes().item(1), "InProcessEnabled" )));
+		this.setComModeOutOfProcessEnabled(Boolean.valueOf(getAttribByName(node.getChildNodes().item(1), "OutOfProcessEnabled" )));
+		
+
 	}
 	
 	private void parseAppvFileTypeAssociation(NodeList subnode){
