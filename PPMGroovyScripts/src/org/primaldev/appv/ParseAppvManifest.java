@@ -125,36 +125,71 @@ public class ParseAppvManifest {
 						NodeList enodes = lnode.item(i).getChildNodes();
 						
 						//FileExtension
-						if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:FileExtension")){
+						if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:FileExtension")){	
+							
 							for (int x = 0; x < enodes.getLength(); x++) {
-								if(enodes.item(x).hasAttributes()){
-									Element eElement = (Element) enodes.item(i);
-									appvFileTypeAssociation.setMimeAssociation(Boolean.valueOf(eElement.getAttribute("MimeAssociation")));
-								}
+								if (enodes.item(x).hasChildNodes()){
+									if(enodes.item(x).hasAttributes()){
+										Element eElement = (Element) enodes.item(x);
+										appvFileTypeAssociation.setMimeAssociation(Boolean.valueOf(eElement.getAttribute("MimeAssociation")));
+									}
 
+									if(enodes.item(x).getNodeName().equalsIgnoreCase("appv:Name")){
+										appvFileTypeAssociation.setName(enodes.item(x).getTextContent());
+									}
 
-								if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:Name")){
-									appvFileTypeAssociation.setName(lnode.item(i).getTextContent());
-								}
+									if(enodes.item(x).getNodeName().equalsIgnoreCase("ProgId")){
+										appvFileTypeAssociation.setProgId(enodes.item(x).getTextContent());
+									}
 
-								if(lnode.item(i).getNodeName().equalsIgnoreCase("ProgId")){
-									appvFileTypeAssociation.setProgId(lnode.item(i).getTextContent());
+									
 								}
 							}
-						}
-						
-						
-						//Progid
-						if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:ProgId")){
 							
 						}
 						
 						
+						//Progid (shell extensions not really needed)
+						if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:ProgId")){
+							Collection<AppvShellCommand> appvShellCommands = new ArrayList<AppvShellCommand>();
+							if (lnode.item(i).hasChildNodes()) {
+								NodeList exnodes = lnode.item(i).getChildNodes();
+								for (int j = 0; j < exnodes.getLength(); j++) { 
+
+									if(exnodes.item(j).hasChildNodes()){ //Apppv.Shellcommands
+										NodeList mjnodes = exnodes.item(j).getChildNodes();
+										for (int m = 0; m < mjnodes.getLength(); m++) { 
+											if (mjnodes.item(m).hasChildNodes()){//Apppv.Shellcommand
+												NodeList lenodes = mjnodes.item(m).getChildNodes();
+												AppvShellCommand appvShellCommand = new AppvShellCommand();
+												System.out.print(mjnodes.item(m).getNodeName() + "\n");
+												for (int l = 0; l < lenodes.getLength(); l++) { 
+													if(lenodes.item(l).getNodeName().equalsIgnoreCase("Appv:Name")){
+														appvShellCommand.setName(lenodes.item(l).getTextContent());
+													}
+
+													if(lenodes.item(l).getNodeName().equalsIgnoreCase("appv:ApplicationId")){
+														appvShellCommand.setApplicationId(lenodes.item(l).getTextContent());
+													}
+
+													if(lenodes.item(l).getNodeName().equalsIgnoreCase("appv:CommandLine")){
+														appvShellCommand.setCommandLine(lenodes.item(l).getTextContent());
+													}
+													
+												}
+												appvShellCommands.add(appvShellCommand);
+											}
+										}
+
+									}
+								}
+
+							}
+							
+							appvFileTypeAssociation.setAppvShellCommands(appvShellCommands);
+						}
 						
 					}
-					
-					
-
 					
 				}
 			}
@@ -232,16 +267,10 @@ public class ParseAppvManifest {
 		                   
 		               }   
 					   appvShortcuts.add(appvShortcut);
-					   
-					   
+					
 			   	}
 		   }
 		   
-		   
-		    
 		}
-
-	
-	
 
 }
