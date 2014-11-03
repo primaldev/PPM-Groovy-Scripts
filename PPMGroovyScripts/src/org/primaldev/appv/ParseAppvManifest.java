@@ -26,6 +26,10 @@ public class ParseAppvManifest {
 	Collection<AppvAppPath> appvAppPaths;
 	Collection<AppvFileTypeAssociation> appvFileTypeAssociations;
 	
+	String appvCOMMode;
+	boolean ComModeOutOfProcessEnabled;
+	boolean ComModeInProcessEnabled;
+	
 	public ParseAppvManifest(InputStream xmlInput) {
 		this.xmlInput = xmlInput;
 		try {
@@ -49,6 +53,51 @@ public class ParseAppvManifest {
 		}
 	}
 	
+	
+	
+	
+	public String getAppvCOMMode() {
+		return appvCOMMode;
+	}
+
+
+
+
+	public void setAppvCOMMode(String appvCOMMode) {
+		this.appvCOMMode = appvCOMMode;
+	}
+
+
+
+
+	public boolean isComModeOutOfProcessEnabled() {
+		return ComModeOutOfProcessEnabled;
+	}
+
+
+
+
+	public void setComModeOutOfProcessEnabled(boolean comModeOutOfProcessEnabled) {
+		ComModeOutOfProcessEnabled = comModeOutOfProcessEnabled;
+	}
+
+
+
+
+	public boolean isComModeInProcessEnabled() {
+		return ComModeInProcessEnabled;
+	}
+
+
+
+
+	public void setComModeInProcessEnabled(boolean comModeInProcessEnabled) {
+		ComModeInProcessEnabled = comModeInProcessEnabled;
+	}
+
+
+
+
 	public Collection<AppvShortCut> getAppvShortcuts() {
 		return appvShortcuts;
 	}
@@ -74,7 +123,9 @@ public class ParseAppvManifest {
 	                    if (childNodes.item(y).getNodeName().equalsIgnoreCase("appv:Extensions")) {
 	                        parseAppvExtensions(childNodes.item(y));
 	                    }
-	                    
+	                    if (childNodes.item(y).getNodeName().equalsIgnoreCase("appv:ExtensionsConfiguration")) {
+	                    	parseAppvExtensionsConfiguration(childNodes.item(y).getChildNodes().item(1));
+	                    }
 	                }            
 	        }
 	        
@@ -105,12 +156,23 @@ public class ParseAppvManifest {
 		                	parseAppvFileTypeAssociation(eElement.getChildNodes());
 		                }
 		                
+		              
+		                
 		            }            
 		        }
 		   }
 		  
 		}
 	
+	private void parseAppvExtensionsConfiguration(Node node){
+		System.out.print(node.getChildNodes().item(1).getNodeName());
+		if (node.hasAttributes()){
+			Element eElement = (Element) node;
+			this.setAppvCOMMode(eElement.getAttribute("Mode"));
+			
+			
+		}
+	}
 	
 	private void parseAppvFileTypeAssociation(NodeList subnode){
 		appvFileTypeAssociations = new ArrayList<AppvFileTypeAssociation>();
@@ -162,7 +224,7 @@ public class ParseAppvManifest {
 											if (mjnodes.item(m).hasChildNodes()){//Apppv.Shellcommand
 												NodeList lenodes = mjnodes.item(m).getChildNodes();
 												AppvShellCommand appvShellCommand = new AppvShellCommand();
-												System.out.print(mjnodes.item(m).getNodeName() + "\n");
+												
 												for (int l = 0; l < lenodes.getLength(); l++) { 
 													if(lenodes.item(l).getNodeName().equalsIgnoreCase("Appv:Name")){
 														appvShellCommand.setName(lenodes.item(l).getTextContent());
@@ -192,7 +254,9 @@ public class ParseAppvManifest {
 					}
 					
 				}
+				appvFileTypeAssociations.add(appvFileTypeAssociation);
 			}
+			
 		}
 		
 	}
@@ -226,7 +290,7 @@ public class ParseAppvManifest {
 
 				}
 				appvAppPaths.add(appvAppPath);
-				System.out.print(appvAppPath.getApplicationPath());
+				
 			}
 		}	
 
