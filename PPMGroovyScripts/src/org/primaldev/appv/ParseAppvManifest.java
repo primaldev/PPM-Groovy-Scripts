@@ -213,32 +213,111 @@ public class ParseAppvManifest {
 	    NodeList nList = doc.getElementsByTagName("Package");
 	    
 	    for (int i = 0; i < nList.getLength(); i++) {
-	    
-	        if(nList.item(i).hasChildNodes()){
-	            NodeList childNodes = nList.item(i).getChildNodes();
-	            for (int y = 0; y < childNodes.getLength(); y++) {
-                    	if (childNodes.item(y).getNodeName().equalsIgnoreCase("Identity")) {
-                    		parseIdentity(childNodes.item(y));                    	
-                    	}
-	            	
-	                    if (childNodes.item(y).getNodeName().equalsIgnoreCase("appv:Extensions")) {
-	                        parseAppvExtensions(childNodes.item(y));
-	                    }
-	                    if (childNodes.item(y).getNodeName().equalsIgnoreCase("appv:ExtensionsConfiguration")) {
-	                    	parseAppvExtensionsConfiguration(childNodes.item(y).getChildNodes().item(1));
-	                    }
-	                                     
-	                }            
-	        }
-	        
+
+	    	if(nList.item(i).hasChildNodes()){
+	    		NodeList childNodes = nList.item(i).getChildNodes();
+	    		for (int y = 0; y < childNodes.getLength(); y++) {
+	    			if (childNodes.item(y).getNodeName().equalsIgnoreCase("Identity")) {
+	    				parseIdentity(childNodes.item(y));                    	
+	    			}
+
+	    			if (childNodes.item(y).getNodeName().equalsIgnoreCase("Properties")) {
+	    				parseProperties(childNodes.item(y));                    	
+	    			}
+
+	    			if (childNodes.item(y).getNodeName().equalsIgnoreCase("Resources")) {
+	    				parseResources(childNodes.item(y).getChildNodes().item(1));                    	
+	    			}                    	
+
+	    			if (childNodes.item(y).getNodeName().equalsIgnoreCase("Prerequisites")) {
+	    				parsePrerequisites(childNodes.item(y));                    	
+	    			}  
+
+	    			if (childNodes.item(y).getNodeName().equalsIgnoreCase("appv:Extensions")) {
+	    				parseAppvExtensions(childNodes.item(y));
+	    			}
+	    			if (childNodes.item(y).getNodeName().equalsIgnoreCase("appv:ExtensionsConfiguration")) {
+	    				parseAppvExtensionsConfiguration(childNodes.item(y).getChildNodes().item(1));
+	    			}
+
+	    		}            
+	    	}
+
 	    }
 		 
 	}
 
 	 
 	private void parseIdentity(Node node){
+		this.setAppvVersionId(getAttribByName(node, "appv:VersionId"));
+		this.setAppvPackageId(getAttribByName(node, "appv:PackageId"));
+		this.setPackageVersion(getAttribByName(node, "Version"));
+		this.setAppvPublisher(getAttribByName(node, "Publisher"));
+		this.setName(getAttribByName(node, "Name"));
+		
+		//System.out.print("Packageid: " + this.getAppvPackageId() + "\n");
 		
 	}
+	
+	private void parseProperties(Node node) {
+		 if (node.hasChildNodes()) {
+			 NodeList childNodes = node.getChildNodes();
+			 for (int i = 0; i < childNodes.getLength(); i++) {
+				 if (childNodes.item(i).getNodeName().equalsIgnoreCase("DisplayName")){
+					 this.setDisplayName(childNodes.item(i).getTextContent());
+				 }
+				 
+				 if (childNodes.item(i).getNodeName().equalsIgnoreCase("PublisherDisplayName")){
+					 this.setPublisherDisplayName(childNodes.item(i).getTextContent());
+				 }
+				 
+				 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Description")){
+					 this.setDescription(childNodes.item(i).getTextContent());
+				 }
+				 
+				 if (childNodes.item(i).getNodeName().equalsIgnoreCase("appv:AppVPackageDescription")){
+					 this.setAppVPackageDescription(childNodes.item(i).getTextContent());
+				 }	
+				 
+				 if (childNodes.item(i).getNodeName().equalsIgnoreCase("appv1.2:FullVFSWriteMode")){
+					 this.setFullVFSWriteMode(Boolean.valueOf(childNodes.item(i).getTextContent()));
+				 }				 
+
+			 }
+		 }
+		 //System.out.print("Display Name: " + this.getDisplayName() + "\n");
+	}
+	
+	
+	private void parseResources(Node node){
+		this.setLanguage(getAttribByName(node, "Language"));
+		//System.out.print("Language:" + this.getLanguage() + "\n");
+		
+	}
+	
+	private void parsePrerequisites(Node node) {
+		 if (node.hasChildNodes()) {
+			 NodeList childNodes = node.getChildNodes();
+			 for (int i = 0; i < childNodes.getLength(); i++) {
+				 if (childNodes.item(i).getNodeName().equalsIgnoreCase("OSMinVersion")){
+					 this.setoSMinVersion(childNodes.item(i).getTextContent());
+				 }
+				 
+				 if (childNodes.item(i).getNodeName().equalsIgnoreCase("OSMaxVersionTested")){
+					 this.setoSMaxVersionTested(childNodes.item(i).getTextContent());
+				 }
+				 if (childNodes.item(i).getNodeName().equalsIgnoreCase("appv:TargetOSes")){
+					 this.setSequencingStationProcessorArchitecture(getAttribByName(childNodes.item(i),"SequencingStationProcessorArchitecture"));
+				 }
+			
+			 }
+		 }
+		 
+		 //System.out.print("OSMaxVersion:" + this.getoSMaxVersionTested() + "\n");
+		 
+	}
+	
+	
 	private void parseAppvExtensions(Node node) {   
 		   
 		    if (node.hasChildNodes()) {
@@ -261,8 +340,6 @@ public class ParseAppvManifest {
 		                	parseAppvFileTypeAssociation(eElement.getChildNodes());
 		                }
 		                
-		              
-		                
 		            }            
 		        }
 		   }
@@ -283,8 +360,8 @@ public class ParseAppvManifest {
 	private void parseAppvExtensionsConfiguration(Node node){
 		
 		this.setAppvCOMMode(getAttribByName(node, "Mode"));
-		System.out.print(node.getNodeName());
-		System.out.print(node.getChildNodes().item(1).getNodeName());
+		//System.out.print(node.getNodeName());
+		//System.out.print(node.getChildNodes().item(1).getNodeName());
 		this.setComModeInProcessEnabled(Boolean.valueOf(getAttribByName(node.getChildNodes().item(1), "InProcessEnabled" )));
 		this.setComModeOutOfProcessEnabled(Boolean.valueOf(getAttribByName(node.getChildNodes().item(1), "OutOfProcessEnabled" )));
 		
