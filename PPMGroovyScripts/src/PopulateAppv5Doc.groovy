@@ -11,12 +11,23 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import org.w3c.dom.Document
 import org.w3c.dom.Element
+import word.utils.Utils;
+import word.w2004.elements.Table
+import word.w2004.elements.tableElements.TableEle;
+import word.utils.TestUtils;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 //test values//
 
 String projectFolder = "D:/dev/projects/Application_Test-11.3-W7-x64"; //get from PPM env
 String appvFolder = "D:/dev/projects/Application_Test-11.3-W7-x64/Deploy/APPV/1.0";
 appvPackage = appvFolder + "/Photoshop-CS6-01.appv";
+
+String projectName = "Application_Test-11.3-W7-x64";
+String projectAppvDocName = "ppmIntake.doc";
+
+
 //////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////
@@ -26,6 +37,30 @@ appvPackage = appvFolder + "/Photoshop-CS6-01.appv";
  } else {
      print "File not found";
  }
+ 
+ 
+ /////////////////////////////////////////////////////
+ // Documents must be saved as word 2003 xml format //
+ /////////////////////////////////////////////////////
+ 
+ 
+ 
+ //modify document
+ 
+  xmlTemplate = Utils.readFile(projectFolder + "/" + projectAppvDocName);
+  
+  
+  
+  
+  //Save Document
+  
+   File tempFile = File.createTempFile("ppm", ".doc");
+   tempFile << xmlTemplate;
+   
+   Files.copy(tempFile.toPath(), new File(projectFolder + "/" + projectAppvDocName).toPath(), StandardCopyOption.REPLACE_EXISTING );
+   tempFile.delete();
+  
+  
 
 ///////////////////////////Functions/////////////////////////
 
@@ -42,7 +77,7 @@ private void extractAppvInfo(String appvPackage) {
         if (entry.name.equalsIgnoreCase("AppxManifest.xml")){
             //parseAppxManifest(zipFile.getInputStream(entry));
 			ParseAppvManifest parseAppvManifest = new ParseAppvManifest(zipFile.getInputStream(entry));
-			InnerValues.setAppvShorcuts(parseAppvManifest.getAppvShortcuts());
+			InnerValues.setAppvManifest(parseAppvManifest);
         }
         
         //InputStream stream = zipFile.getInputStream(entry);
@@ -72,8 +107,8 @@ private void parseFileMetaData(InputStream stream) {
 
  class InnerValues {
     static String appvMountRoot
-    static Collection<AppvShortCut> appvShorcuts;
     
+    static ParseAppvManifest appvManifest;
     
     public static void setAppvMountRoot(String appvMountRoot) {
        this.appvMountRoot = appvMountRoot;
@@ -83,12 +118,14 @@ private void parseFileMetaData(InputStream stream) {
         return appvMountRoot;
     }
     
-    public static Collection<AppvShortCut> getAppvShorcuts() {
-        return appvShorcuts;
+  
+    public static void setAppvManifest(ParseAppvManifest appvManifest) {
+       this.appvManifest = appvManifest;
     }
-    public static void setAppvShorcuts(Collection<AppvShortCut> appvShorcuts) {
-       this.appvShorcuts = appvShorcuts;
-    }
+	
+	public static ParseAppvManifest getAppvManifest() {
+		return appvManifest;
+	}
     
 }
  

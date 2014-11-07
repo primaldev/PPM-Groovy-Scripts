@@ -1,9 +1,14 @@
+import groovy.text.XmlTemplateEngine.XmlTemplate;
+
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.io.BufferedReader;
 import word.utils.Utils;
 import word.w2004.elements.Table
 import word.w2004.elements.tableElements.TableEle;
 import word.utils.TestUtils;
+
+
 //test values
 String projectRoot = "D:/dev/projects"; //eventually. get from PPM env
 String templateDir = "D:/dev/templates"; //eventually get from PPM
@@ -20,11 +25,28 @@ String projectIntakeDocName = "ppmIntake.doc";
 def projectDocumentFolder =  projectRoot + "/" + projectName + "/Documents";
 
 //modify document
+ 
+ //xmlTemplate = Files.readAllLines(projectDocumentFolder + "/" + projectIntakeDocName);
+ 
 
- xmlTemplate = Utils.readFile(projectDocumentFolder + "/" + projectIntakeDocName);
+ String xmlTemplate;
+   
+BufferedReader br = new BufferedReader(new FileReader(projectDocumentFolder + "/" + projectIntakeDocName));
+ try {
+	 StringBuilder sb = new StringBuilder();
+	 String line = br.readLine();
+
+	 while (line != null) {
+		 sb.append(line);
+		 sb.append(System.lineSeparator());
+		 line = br.readLine();
+	 }
+	 xmlTemplate = sb.toString();
+ } finally {
+	 br.close();
+ }
  
- 
- 
+  
  xmlTemplate = replacePh(xmlTemplate, "ppmAppName", projectName);
  xmlTemplate = replacePh(xmlTemplate, "ppmAppManufacturer", projectDiscription);
  xmlTemplate = replacePh(xmlTemplate, "ppmAppVersion", projectIntakeDocName);
@@ -32,15 +54,17 @@ def projectDocumentFolder =  projectRoot + "/" + projectName + "/Documents";
  
  Table tbl = new Table();
  tbl.addTableEle(TableEle.TH, "Jira Number", "Description");
- tbl.addTableEle(TableEle.TD, "J2W-1234", "Read Templates nicelly");
- xmlTemplate = replacePh(xmlTemplate, "ppmChangeLog", tbl.getContent());
+ tbl.addTableEle(TableEle.TD, "J2W-123456", "Read Templates nicelly");
+ xmlTemplate = replacePh(xmlTemplate, "ppmChangeLog", "ppmChangeLog\n" + tbl.getContent());
  
 //Save Document
 
+ 
  File tempFile = File.createTempFile("ppm", ".doc");
  tempFile << xmlTemplate;
+
  
- Files.copy(tempFile.toPath(), new File(projectDocumentFolder + "/" + projectIntakeDocName).toPath(), StandardCopyOption.REPLACE_EXISTING );
+ Files.copy(tempFile.toPath(), new File(projectDocumentFolder + "/" +  projectIntakeDocName).toPath(), StandardCopyOption.REPLACE_EXISTING );
  tempFile.delete();
 
  
