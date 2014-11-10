@@ -30,16 +30,17 @@ if (!fileDiscription.exists()){
 }
 
 //Copy Template Files
+//We gonna pick em one by one
 
-File src = new File(templateDir); 
-File dest = new File(projectRoot + "/" + projectName + "/Documents");
+//File src = new File(templateDir); 
+//File dest = new File(projectRoot + "/" + projectName + "/Documents");
 
-try {
-	copyFolder(src, dest);
-} catch (Exception e) {
-	print "Templates not copied";
-	e.printStackTrace();
-}
+//try {
+//	copyFolder(src, dest);
+//} catch (Exception e) {
+//	print "Templates not copied";
+//	e.printStackTrace();
+//}
 
 //////////////////////Classes//////////////////////////
 

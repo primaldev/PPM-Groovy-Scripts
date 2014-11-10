@@ -15,7 +15,7 @@ String templateDir = "D:/dev/templates"; //eventually get from PPM
 
 String projectName = "Application_Test-11.3-W7-x64"; //get from PPM env
 String projectDiscription = "Application for doing work";
-String projectIntakeDocName = "ppmIntake.doc";
+String templateIntakeDocName = "ppmIntake.doc";
 
 
 /////////////////////////////////////////////////////
@@ -31,7 +31,7 @@ def projectDocumentFolder =  projectRoot + "/" + projectName + "/Documents";
 
  String xmlTemplate;
    
-BufferedReader br = new BufferedReader(new FileReader(projectDocumentFolder + "/" + projectIntakeDocName));
+BufferedReader br = new BufferedReader(new FileReader(templateDir + "/" + templateIntakeDocName));
  try {
 	 StringBuilder sb = new StringBuilder();
 	 String line = br.readLine();
@@ -49,13 +49,13 @@ BufferedReader br = new BufferedReader(new FileReader(projectDocumentFolder + "/
   
  xmlTemplate = replacePh(xmlTemplate, "ppmAppName", projectName);
  xmlTemplate = replacePh(xmlTemplate, "ppmAppManufacturer", projectDiscription);
- xmlTemplate = replacePh(xmlTemplate, "ppmAppVersion", projectIntakeDocName);
+ xmlTemplate = replacePh(xmlTemplate, "ppmAppVersion", templateIntakeDocName);
  
  
  Table tbl = new Table();
  tbl.addTableEle(TableEle.TH, "Jira Number", "Description");
- tbl.addTableEle(TableEle.TD, "J2W-123456", "Read Templates nicelly");
- xmlTemplate = replacePh(xmlTemplate, "ppmChangeLog", "ppmChangeLog\n" + tbl.getContent());
+ tbl.addTableEle(TableEle.TD, "J2W-123456", "Read Templates nicely");
+ xmlTemplate = replacePh(xmlTemplate, "ppmChangeLog", tbl.getContent());
  
 //Save Document
 
@@ -63,8 +63,17 @@ BufferedReader br = new BufferedReader(new FileReader(projectDocumentFolder + "/
  File tempFile = File.createTempFile("ppm", ".doc");
  tempFile << xmlTemplate;
 
+ def docpath;
  
- Files.copy(tempFile.toPath(), new File(projectDocumentFolder + "/" +  projectIntakeDocName).toPath(), StandardCopyOption.REPLACE_EXISTING );
+ if (new File(projectDocumentFolder + "/" +  projectName + "-Intake.doc").exists()){
+	 docpath = projectDocumentFolder + "/" +  projectName + "-Intake-New-Generated.doc"
+ } else {
+ 	docpath = projectDocumentFolder + "/" +  projectName + "-Intake.doc"
+ 
+ }
+ 
+ 
+ Files.copy(tempFile.toPath(), new File(docpath).toPath(), StandardCopyOption.REPLACE_EXISTING );
  tempFile.delete();
 
  
