@@ -199,9 +199,7 @@ public class ParseAppvManifest {
 		return appvShortcuts;
 	}
 	
-	public Collection<AppvAppPath> getAppvAppPath() {
-		return appvAppPaths;
-	}
+	
 	
 	private void parseXml() throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

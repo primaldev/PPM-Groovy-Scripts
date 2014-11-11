@@ -5,6 +5,9 @@ import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import org.w3c.dom.Document;
 
+import org.primaldev.appv.AppvAppPath
+import org.primaldev.appv.AppvFileTypeAssociation
+import org.primaldev.appv.AppvShellCommand
 import org.primaldev.appv.AppvShortCut
 import org.primaldev.appv.ParseAppvManifest
 import org.w3c.dom.NamedNodeMap
@@ -55,7 +58,7 @@ String projectDocumentFolder = projectFolder + "/Documents";
   
   String xmlTemplate;
   
-BufferedReader br = new BufferedReader(new FileReader(projectFolder + "/" + templateAppvDocName));
+BufferedReader br = new BufferedReader(new FileReader(templateDir + "/" + templateAppvDocName));
 try {
 	StringBuilder sb = new StringBuilder();
 	String line = br.readLine();
@@ -76,8 +79,57 @@ try {
 xmlTemplate = replacePh(xmlTemplate, "ppmAppName", projectName);
 xmlTemplate = replacePh(xmlTemplate, "ppmAppvMountRoot", InnerValues.appvMountRoot);
 
-xmlTemplate = replacePh(xmlTemplate, "ppmAppvCOMMode", InnerValues.getAppvManifest().appvCOMMode);
+xmlTemplate = replacePh(xmlTemplate, "ppmAppvCOMMode", InnerValues.getAppvManifest().getAppvCOMMode());
+xmlTemplate = replacePh(xmlTemplate, "ppmAppVPackageDescription", InnerValues.getAppvManifest().getAppVPackageDescription());
+xmlTemplate = replacePh(xmlTemplate, "ppmAppvPackageId", InnerValues.getAppvManifest().getAppvPackageId());
+xmlTemplate = replacePh(xmlTemplate, "ppmAppvPublisher", InnerValues.getAppvManifest().getAppvPublisher());
+xmlTemplate = replacePh(xmlTemplate, "ppmAppvVersionId", InnerValues.getAppvManifest().getAppvVersionId());
+xmlTemplate = replacePh(xmlTemplate, "ppmDescription", InnerValues.getAppvManifest().getDescription());
+xmlTemplate = replacePh(xmlTemplate, "ppmDisplayName", InnerValues.getAppvManifest().getDisplayName());
+xmlTemplate = replacePh(xmlTemplate, "ppmLanguage", InnerValues.getAppvManifest().getLanguage());
+xmlTemplate = replacePh(xmlTemplate, "ppmName", InnerValues.getAppvManifest().getName());
+xmlTemplate = replacePh(xmlTemplate, "ppmOSMaxVersionTested", InnerValues.getAppvManifest().getoSMaxVersionTested());
+xmlTemplate = replacePh(xmlTemplate, "ppmOSMinVersion", InnerValues.getAppvManifest().getoSMinVersion());
+xmlTemplate = replacePh(xmlTemplate, "ppmPackageVersion", InnerValues.getAppvManifest().getPackageVersion());
+xmlTemplate = replacePh(xmlTemplate, "ppmPublisherDisplayName", InnerValues.getAppvManifest().getPublisherDisplayName());
+xmlTemplate = replacePh(xmlTemplate, "ppmAppvPublisherDisplayName", InnerValues.getAppvManifest().getSequencingStationProcessorArchitecture());
+xmlTemplate = replacePh(xmlTemplate, "ppmFullVFSWriteMode", String.valueOf(InnerValues.getAppvManifest().getFullVFSWriteMode()));
 
+
+
+Table appPathTable = new Table();
+appPathTable.addTableEle(TableEle.TH, "App ID", "Application Path", "Prefix");
+for (AppvAppPath appvPath : InnerValues.getAppvManifest().getAppvAppPaths()){
+	appPathTable.addTableEle(TableEle.TD,appvPath.getApplicationId(),appvPath.getApplicationPath(),appvPath.getPATHEnvironmentVariablePrefix());
+}
+
+xmlTemplate = replacePh(xmlTemplate, "AppvAppPaths", appPathTable.getContent());
+
+Table appFtaTable = new Table();
+appFtaTable.addTableEle(TableEle.TH, "Name","ProgramId","Mime", "Shell Command");
+
+for (AppvFileTypeAssociation appvFta : InnerValues.getAppvManifest().getAppvFileTypeAssociations()) {
+	Table cmdTble = new Table();
+	cmdTble.addTableEle(TableEle.TH, "Name", "Command Line", "ID");
+	
+	for (AppvShellCommand appvCmd:appvFta.getAppvShellCommands()) {
+		cmdTble.addTableEle(TableEle.TD, appvCmd.getName(),appvCmd.getCommandLine(),appvCmd.getApplicationId() );		
+	}
+	print appvFta.getName()
+	
+	//appFtaTable.addTableEle(TableEle.TD,appvFta.getName(),appvFta.getProgId(), String.valueOf(appvFta.isMimeAssociation()),cmdTble.getContent());
+}
+
+xmlTemplate = replacePh(xmlTemplate, "ppmAppvFTA", appFtaTable.getContent());
+
+
+Table appvSc = new Table();
+appvSc.addTableEle(TableEle.TH,"Link File", "Target", "Working Dir", "Arguments", "Icon" );
+
+for (AppvShortCut appvShortcut : InnerValues.getAppvManifest().getAppvShortcuts()){
+	appvSc.addTableEle(TableEle.TD,appvShortcut.getFile(),appvShortcut.getTarget(),appvShortcut.getWorkingDirectory(),appvShortcut.getArguments(),appvShortcut.getIcon());
+}
+xmlTemplate = replacePh(xmlTemplate, "ppmAppvShortcuts", appvSc.getContent());
   
   //Save Document
 
