@@ -2,12 +2,12 @@ package org.primaldev.appv;
 
 public class AppvShortCut {
 	
-	 static String File;  //the actual lnk file
-	    static String Target;
-	    static String Icon;
-	    static String Arguments;
-	    static String WorkingDirectory;
-	    static boolean ShowCommand;
+	 private  String File;  //the actual lnk file
+	 private String Target;
+	 private String Icon;
+	 private String Arguments;
+	 private String WorkingDirectory;
+	 private boolean ShowCommand;
 	    
 	    public AppvShortCut() {
 			// TODO Auto-generated constructor stub

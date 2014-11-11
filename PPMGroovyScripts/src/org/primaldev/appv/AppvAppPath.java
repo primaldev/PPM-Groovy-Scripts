@@ -1,12 +1,12 @@
 package org.primaldev.appv;
 
 public class AppvAppPath {
-	static String Name;
-	static String ApplicationPath;
-	static String PATHEnvironmentVariablePrefix;
-	static String ApplicationId;
+	private String Name;
+	private String ApplicationPath;
+	private String PATHEnvironmentVariablePrefix;
+	private String ApplicationId;
 	
-	public static String getName() {
+	public  String getName() {
 		return Name;
 	}
 	public void setName(String name) {

@@ -2,8 +2,10 @@ package org.primaldev.appv;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,9 +39,9 @@ public class ParseAppvManifest {
 	private String sequencingStationProcessorArchitecture;
 	
 	private InputStream xmlInput;
-	private Collection<AppvShortCut> appvShortcuts;
-	private Collection<AppvAppPath> appvAppPaths;
-	private Collection<AppvFileTypeAssociation> appvFileTypeAssociations;
+	private ArrayList<AppvShortCut> appvShortcuts = new ArrayList<AppvShortCut>();
+	private Collection<AppvAppPath> appvAppPaths = new ArrayList<AppvAppPath>();
+	private Collection<AppvFileTypeAssociation> appvFileTypeAssociations = new ArrayList<AppvFileTypeAssociation>();
 	
 	String appvCOMMode;
 	boolean ComModeOutOfProcessEnabled;
@@ -66,6 +68,8 @@ public class ParseAppvManifest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+
 	}
 	
 	
@@ -170,7 +174,7 @@ public class ParseAppvManifest {
 		this.appvFileTypeAssociations = appvFileTypeAssociations;
 	}
 
-	public void setAppvShortcuts(Collection<AppvShortCut> appvShortcuts) {
+	public void setAppvShortcuts(ArrayList<AppvShortCut> appvShortcuts) {
 		this.appvShortcuts = appvShortcuts;
 	}
 	public String getAppvCOMMode() {
@@ -195,7 +199,7 @@ public class ParseAppvManifest {
 		ComModeInProcessEnabled = comModeInProcessEnabled;
 	}
 
-	public Collection<AppvShortCut> getAppvShortcuts() {
+	public ArrayList<AppvShortCut> getAppvShortcuts() {
 		return appvShortcuts;
 	}
 	
@@ -213,6 +217,7 @@ public class ParseAppvManifest {
 	    for (int i = 0; i < nList.getLength(); i++) {
 
 	    	if(nList.item(i).hasChildNodes()){
+	    		 
 	    		NodeList childNodes = nList.item(i).getChildNodes();
 	    		for (int y = 0; y < childNodes.getLength(); y++) {
 	    			if (childNodes.item(y).getNodeName().equalsIgnoreCase("Identity")) {
@@ -319,6 +324,7 @@ public class ParseAppvManifest {
 	private void parseAppvExtensions(Node node) {   
 		   
 		    if (node.hasChildNodes()) {
+		    	 
 		    	NodeList childNodes = node.getChildNodes();
 		    	for (int i = 0; i < childNodes.getLength(); i++) {
 		        
@@ -367,7 +373,7 @@ public class ParseAppvManifest {
 	}
 	
 	private void parseAppvFileTypeAssociation(NodeList subnode){
-		appvFileTypeAssociations = new ArrayList<AppvFileTypeAssociation>();
+		
 		
 		for (int y = 0; y < subnode.getLength(); y++) { 
 			if (subnode.item(y).hasChildNodes()) { 
@@ -389,11 +395,11 @@ public class ParseAppvManifest {
 									}
 
 									if(enodes.item(x).getNodeName().equalsIgnoreCase("appv:Name")){
-										appvFileTypeAssociation.setName(enodes.item(x).getTextContent());
+										appvFileTypeAssociation.setName(notNull(enodes.item(x).getTextContent()));
 									}
 
 									if(enodes.item(x).getNodeName().equalsIgnoreCase("ProgId")){
-										appvFileTypeAssociation.setProgId(enodes.item(x).getTextContent());
+										appvFileTypeAssociation.setProgId(notNull(enodes.item(x).getTextContent()));
 									}
 
 									
@@ -419,15 +425,15 @@ public class ParseAppvManifest {
 												
 												for (int l = 0; l < lenodes.getLength(); l++) { 
 													if(lenodes.item(l).getNodeName().equalsIgnoreCase("Appv:Name")){
-														appvShellCommand.setName(lenodes.item(l).getTextContent());
+														appvShellCommand.setName(notNull(lenodes.item(l).getTextContent()));
 													}
 
 													if(lenodes.item(l).getNodeName().equalsIgnoreCase("appv:ApplicationId")){
-														appvShellCommand.setApplicationId(lenodes.item(l).getTextContent());
+														appvShellCommand.setApplicationId(notNull(lenodes.item(l).getTextContent()));
 													}
 
 													if(lenodes.item(l).getNodeName().equalsIgnoreCase("appv:CommandLine")){
-														appvShellCommand.setCommandLine(lenodes.item(l).getTextContent());
+														appvShellCommand.setCommandLine(notNull(lenodes.item(l).getTextContent()));
 													}
 													
 												}
@@ -453,67 +459,74 @@ public class ParseAppvManifest {
 		
 	}
 	
+	private String notNull(String string){
+		if (string !=null){
+			return string;
+			
+		}else{
+			return "not defined";
+		}
+	}
+	
+
+	
 	private void parseAppvAppPath(NodeList subnode) {
-		appvAppPaths = new ArrayList<AppvAppPath>();
-		for (int y = 0; y < subnode.getLength(); y++) { 
-			if (subnode.item(y).hasChildNodes()) { 
-				NodeList lnode = subnode.item(y).getChildNodes();
+	
+		//for (int y = 0; y < subnode.getLength(); y++) { 
+			if (subnode.item(1).hasChildNodes()) { 
+				NodeList lnode = subnode.item(1).getChildNodes();
 
 				AppvAppPath appvAppPath = new AppvAppPath();
 				for (int i = 0; i < lnode.getLength(); i++) {
 
-
 					if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:Name")){
-						appvAppPath.setName(lnode.item(i).getTextContent());
+						appvAppPath.setName(notNull(lnode.item(i).getTextContent()));
 					}
 
 					if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:ApplicationPath")){
-						appvAppPath.setApplicationPath(lnode.item(i).getTextContent());
+						appvAppPath.setApplicationPath(notNull(lnode.item(i).getTextContent()));
 					}
 
 					if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:PATHEnvironmentVariablePrefix")){
-						appvAppPath.setPATHEnvironmentVariablePrefix(lnode.item(i).getTextContent());
+						appvAppPath.setPATHEnvironmentVariablePrefix(notNull(lnode.item(i).getTextContent()));
 					}
 
 					if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:ApplicationId")){
-						appvAppPath.setApplicationId(lnode.item(i).getTextContent());
-					}				
-
+						appvAppPath.setApplicationId(notNull(lnode.item(i).getTextContent()));
+					}			
 
 				}
 				appvAppPaths.add(appvAppPath);
 				
 			}
-		}	
+		//}	
 
 	}
 
 
 		private void parseAppvShortcuts(NodeList subnode){
-		    
-		    appvShortcuts = new ArrayList<AppvShortCut>();
-		   for (int i = 0; i < subnode.getLength(); i++) { 
-		   
-			   	if (subnode.item(i).hasChildNodes()) {    
-					   AppvShortCut appvShortcut = new AppvShortCut();
-					    NodeList lnode = subnode.item(i).getChildNodes();
+			   
+			   	if (subnode.item(1).hasChildNodes()) {    
+			   		
+					    NodeList lnode = subnode.item(1).getChildNodes();
+					    AppvShortCut appvShortcut = new AppvShortCut();
 					   for (int y = 0; y < lnode.getLength(); y++) { 
-		                                 
+						   
 						   
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:File")){
-		                       appvShortcut.setFile(lnode.item(y).getTextContent());
+		                       appvShortcut.setFile(notNull(lnode.item(y).getTextContent()));
 		                   }                   
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:Target")){
-		                       appvShortcut.setTarget(lnode.item(y).getTextContent());
+		                       appvShortcut.setTarget(notNull(lnode.item(y).getTextContent()));
 		                   }
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:Icon")){
-		                       appvShortcut.setIcon(lnode.item(y).getTextContent());
+		                       appvShortcut.setIcon(notNull(lnode.item(y).getTextContent()));
 		                   }
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:Arguments")){
-		                       appvShortcut.setArguments(lnode.item(y).getTextContent());
+		                       appvShortcut.setArguments(notNull(lnode.item(y).getTextContent()));
 		                   }
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:WorkingDirectory")){
-		                       appvShortcut.setWorkingDirectory(lnode.item(y).getTextContent());
+		                       appvShortcut.setWorkingDirectory(notNull(lnode.item(y).getTextContent()));
 		                   }
 		                   if(lnode.item(y).getNodeName().equalsIgnoreCase("appv:ShowCommand")){
 		                       appvShortcut.setShowCommand(Boolean.valueOf(lnode.item(y).getTextContent()));
@@ -521,12 +534,10 @@ public class ParseAppvManifest {
 		                 
 		                  //System.out.print("Gs "  + lnode.item(y).getNodeName() + ":" + lnode.item(y).getTextContent() + "\n");                   
 		                   
-		               }   
+		               }  
 					   appvShortcuts.add(appvShortcut);
-					
+
 			   	}
-		   }
-		   
 		}
 
 }
