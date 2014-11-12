@@ -115,14 +115,16 @@ for (AppvFileTypeAssociation appvFta : InnerValues.getAppvManifest().getAppvFile
 	cmdTble.addTableEle(TableEle.TH, "Name", "Command Line", "ID");
 
 	for (AppvShellCommand appvCmd : appvFta.getAppvShellCommands()) {
-		//print "Shell name " + appvCmd.getName() "\n"				
-		//cmdTble.addTableEle(TableEle.TD, appvCmd.getName(), appvCmd.getCommandLine(), appvCmd.getApplicationId());
+		if (appvCmd !=null) {
+			print "Shell name " + appvCmd.getName() "\n"				
+			cmdTble.addTableEle(TableEle.TD, appvCmd.getName(), appvCmd.getCommandLine(), appvCmd.getApplicationId());
+		}
 	}
 	print "wtf " + appvFta.getProgId() + "\n" 
 	
 	
-	if(cmdTble!=null) {
-		appFtaTable.addTableEle(TableEle.TD,appvFta.getName(),appvFta.getProgId(), String.valueOf(appvFta.isMimeAssociation()),"No Shell");
+	if(cmdTble==null) {
+		appFtaTable.addTableEle(TableEle.TD,appvFta.getName(),appvFta.getProgId(), String.valueOf(appvFta.isMimeAssociation()),"No Shell Extension");
 	} else {	
 		appFtaTable.addTableEle(TableEle.TD,appvFta.getName(),appvFta.getProgId(), String.valueOf(appvFta.isMimeAssociation()),cmdTble.getContent());
 	}
