@@ -396,6 +396,8 @@ public class ParseAppvManifest {
 				//Some Fta's do not have extensions so we protect against null values
 				appvFileTypeAssociation.setName("");
 				appvFileTypeAssociation.setProgId("");
+				appvFileTypeAssociation.setProgIdName("");
+				appvFileTypeAssociation.setProgIdDescription("");
 				boolean noExt=true;
 				for (int i = 0; i < lnode.getLength(); i++) {
 					
@@ -439,12 +441,12 @@ public class ParseAppvManifest {
 							if (lnode.item(i).hasChildNodes()) {
 								NodeList exnodes = lnode.item(i).getChildNodes();
 								for (int j = 0; j < exnodes.getLength(); j++) { 
-									System.out.print("ProgIDName:" + exnodes.item(j) + "\n");
+									
 									if (exnodes.item(j).getNodeName().equalsIgnoreCase("appv:Name")){
-										appvFileTypeAssociation.setProgIdName(exnodes.item(j).getTextContent());										
+										appvFileTypeAssociation.setProgIdName(notNull(exnodes.item(j).getTextContent()));										
 									}
 									if (exnodes.item(j).getNodeName().equalsIgnoreCase("appv:Description")){
-										appvFileTypeAssociation.setProgIdDescription(exnodes.item(j).getTextContent());										
+										appvFileTypeAssociation.setProgIdDescription(notNull(exnodes.item(j).getTextContent()));										
 									}
 									
 									

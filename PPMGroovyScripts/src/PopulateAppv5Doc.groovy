@@ -108,32 +108,30 @@ for (AppvAppPath appvPath : InnerValues.getAppvManifest().getAppvAppPaths()){
 xmlTemplate = replacePh(xmlTemplate, "AppvAppPaths", appPathTable.getContent());
 
 Table appFtaTable = new Table();
-appFtaTable.addTableEle(TableEle.TH, "Name","ProgramId","Mime", "Shell Command");
+appFtaTable.addTableEle(TableEle.TH, "Name","ProgramId", "Discription","Mime");
 
 for (AppvFileTypeAssociation appvFta : InnerValues.getAppvManifest().getAppvFileTypeAssociations()) {
 	Table cmdTble = new Table();
-	cmdTble.addTableEle(TableEle.TH, "Name", "Command Line", "ID");
-	//print "wtf " + appvFta.getName() + appvFta.getProgId() + "\n"
+	
+	print "wtf " + appvFta.getName() + " : " + appvFta.getProgIdName() + "\n"
+	appFtaTable.addTableEle(TableEle.TF,appvFta.getName(),appvFta.getProgIdName(), appvFta.getProgIdDescription(), String.valueOf(appvFta.isMimeAssociation()));
 	if(appvFta.isShellCommds()){
 		for (AppvShellCommand appvCmda : appvFta.getAppvShellCommands()) {
 			
 			if(appvCmda.getFriendlyName() == null || appvCmda.getFriendlyName().length() < 1){
 				//print "Shell name " + appvCmda.getName() + " : " + appvCmda.getCommandLine() + " : " + appvCmda.getApplicationId() + "\n"
-				cmdTble.addTableEle(TableEle.TD, appvCmda.getName(), appvCmda.getCommandLine(), appvCmda.getApplicationId());
+				appFtaTable.addTableEle(TableEle.TD, "", appvCmda.getName(), appvCmda.getCommandLine(), appvCmda.getApplicationId());
 			}else if (appvCmda.getFriendlyName() != null){
 				//print "Shell name " + appvCmda.getName() + " : " + appvCmda.getFriendlyName() + "\n"
-				cmdTble.addTableEle(TableEle.TD, appvCmda.getName(), appvCmda.getFriendlyName(), " " );
+			    
+				appFtaTable.addTableEle(TableEle.TD, "Shell",appvCmda.getName(), appvCmda.getFriendlyName().replaceAll("[^\\w\\s\\-_]", ""), "" );
 			}
+			
+			//appFtaTable.addTableEle(TableEle.TF, "Shell", appvCmda.getName(), "dsaf", "asdf");
 		}
 	
 	}
-	
-	
-	if(cmdTble==null) {
-		appFtaTable.addTableEle(TableEle.TD,appvFta.getName(),appvFta.getProgId(), String.valueOf(appvFta.isMimeAssociation()),"No Shell Extension");
-	} else {	
-		appFtaTable.addTableEle(TableEle.TD,appvFta.getName(),appvFta.getProgId(), String.valueOf(appvFta.isMimeAssociation()),cmdTble.getContent());
-	}
+
 }
 
 xmlTemplate = replacePh(xmlTemplate, "ppmAppvFTA", appFtaTable.getContent());
