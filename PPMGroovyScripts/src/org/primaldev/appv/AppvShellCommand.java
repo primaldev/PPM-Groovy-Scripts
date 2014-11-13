@@ -4,6 +4,7 @@ public class AppvShellCommand {
   private String name;
   private String applicationId;
   private String commandLine;
+  private String friendlyName;
   
 public String getName() {
 	return name;
@@ -24,6 +25,12 @@ public void setCommandLine(String commandLine) {
 	this.commandLine = commandLine;
 }
   
-  
+public String getFriendlyName() {
+	return friendlyName;
+}
+
+public void setFriendlyName(String friendlyName) {
+	this.friendlyName = friendlyName;
+}
   
 }

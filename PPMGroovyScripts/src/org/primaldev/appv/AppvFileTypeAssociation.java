@@ -8,6 +8,9 @@ public class AppvFileTypeAssociation {
 	private boolean mimeAssociation;
 	private String ProgId;	
 	private Collection<AppvShellCommand> appvShellCommands ;
+	private boolean shellCommds;
+	private String progIdName;
+	private String progIdDescription;
 	
 	public String getName() {
 		return name;
@@ -34,6 +37,25 @@ public class AppvFileTypeAssociation {
 		this.appvShellCommands = appvShellCommands;
 	}
 	
+	public boolean isShellCommds() {
+		return shellCommds;
+	}
+	
+	public void setShellCommds(boolean shellCommds) {
+		this.shellCommds = shellCommds;
+	}
+	public String getProgIdName() {
+		return progIdName;
+	}
+	public void setProgIdName(String progIdName) {
+		this.progIdName = progIdName;
+	}
+	public String getProgIdDescription() {
+		return progIdDescription;
+	}
+	public void setProgIdDescription(String progIdDescription) {
+		this.progIdDescription = progIdDescription;
+	}
 	
 	
 	

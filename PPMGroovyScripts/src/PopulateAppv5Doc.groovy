@@ -113,14 +113,20 @@ appFtaTable.addTableEle(TableEle.TH, "Name","ProgramId","Mime", "Shell Command")
 for (AppvFileTypeAssociation appvFta : InnerValues.getAppvManifest().getAppvFileTypeAssociations()) {
 	Table cmdTble = new Table();
 	cmdTble.addTableEle(TableEle.TH, "Name", "Command Line", "ID");
-
-	for (AppvShellCommand appvCmd : appvFta.getAppvShellCommands()) {
-		if (appvCmd !=null) {
-			print "Shell name " + appvCmd.getName() "\n"				
-			cmdTble.addTableEle(TableEle.TD, appvCmd.getName(), appvCmd.getCommandLine(), appvCmd.getApplicationId());
+	//print "wtf " + appvFta.getName() + appvFta.getProgId() + "\n"
+	if(appvFta.isShellCommds()){
+		for (AppvShellCommand appvCmda : appvFta.getAppvShellCommands()) {
+			
+			if(appvCmda.getFriendlyName() == null || appvCmda.getFriendlyName().length() < 1){
+				//print "Shell name " + appvCmda.getName() + " : " + appvCmda.getCommandLine() + " : " + appvCmda.getApplicationId() + "\n"
+				cmdTble.addTableEle(TableEle.TD, appvCmda.getName(), appvCmda.getCommandLine(), appvCmda.getApplicationId());
+			}else if (appvCmda.getFriendlyName() != null){
+				//print "Shell name " + appvCmda.getName() + " : " + appvCmda.getFriendlyName() + "\n"
+				cmdTble.addTableEle(TableEle.TD, appvCmda.getName(), appvCmda.getFriendlyName(), " " );
+			}
 		}
+	
 	}
-	print "wtf " + appvFta.getProgId() + "\n" 
 	
 	
 	if(cmdTble==null) {

@@ -69,7 +69,21 @@ public class ParseAppvManifest {
 			e.printStackTrace();
 		}
 		
+		
+		//testLoop();
 
+	}
+	
+	
+	
+	private void testLoop(){
+		for( AppvFileTypeAssociation fta:appvFileTypeAssociations) {
+			if (fta.isShellCommds()) {
+				for(AppvShellCommand ftacmd: fta.getAppvShellCommands()){
+					System.out.print("FTyay " + fta.getName() + " : " + ftacmd.getName() + " : " + ftacmd.getCommandLine() + " : " + ftacmd.getApplicationId() + "\n");
+				}
+			}
+		}
 	}
 	
 	
@@ -382,6 +396,7 @@ public class ParseAppvManifest {
 				//Some Fta's do not have extensions so we protect against null values
 				appvFileTypeAssociation.setName("");
 				appvFileTypeAssociation.setProgId("");
+				boolean noExt=true;
 				for (int i = 0; i < lnode.getLength(); i++) {
 					
 					if(lnode.item(i).hasChildNodes()){
@@ -389,7 +404,7 @@ public class ParseAppvManifest {
 						
 						//FileExtension
 						if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:FileExtension")){	
-							
+							noExt=false;
 							for (int x = 0; x < enodes.getLength(); x++) {
 								if (enodes.item(x).hasChildNodes()){
 									if(enodes.item(x).hasAttributes()){
@@ -399,6 +414,7 @@ public class ParseAppvManifest {
 
 									if(enodes.item(x).getNodeName().equalsIgnoreCase("appv:Name")){
 										appvFileTypeAssociation.setName(notNull(enodes.item(x).getTextContent()));
+										
 									}
 
 									if(enodes.item(x).getNodeName().equalsIgnoreCase("appv:ProgId")){
@@ -409,16 +425,29 @@ public class ParseAppvManifest {
 								}
 							}
 							
+							
+						}
+						if(noExt){
+							appvFileTypeAssociation.setName("ProgId");
+							
 						}
 						
-						
-						//Progid (shell extensions not really needed)
+						//Progid ()
 						if(lnode.item(i).getNodeName().equalsIgnoreCase("appv:ProgId")){
 							Collection<AppvShellCommand> appvShellCommands = null;
+							boolean hasShell = false;
 							if (lnode.item(i).hasChildNodes()) {
 								NodeList exnodes = lnode.item(i).getChildNodes();
 								for (int j = 0; j < exnodes.getLength(); j++) { 
-										
+									System.out.print("ProgIDName:" + exnodes.item(j) + "\n");
+									if (exnodes.item(j).getNodeName().equalsIgnoreCase("appv:Name")){
+										appvFileTypeAssociation.setProgIdName(exnodes.item(j).getTextContent());										
+									}
+									if (exnodes.item(j).getNodeName().equalsIgnoreCase("appv:Description")){
+										appvFileTypeAssociation.setProgIdDescription(exnodes.item(j).getTextContent());										
+									}
+									
+									
 									if(exnodes.item(j).hasChildNodes()){ //Apppv.Shellcommands
 										appvShellCommands = new ArrayList<AppvShellCommand>();
 										
@@ -428,7 +457,7 @@ public class ParseAppvManifest {
 											if (mjnodes.item(m).hasChildNodes()){//Apppv.Shellcommand
 												NodeList lenodes = mjnodes.item(m).getChildNodes();
 												AppvShellCommand appvShellCommand = new AppvShellCommand();
-												boolean hasShell = false;
+												
 												for (int l = 0; l < lenodes.getLength(); l++) { 
 													if(lenodes.item(l).getNodeName().equalsIgnoreCase("appv:Name")){
 														appvShellCommand.setName(notNull(lenodes.item(l).getTextContent()));
@@ -443,10 +472,14 @@ public class ParseAppvManifest {
 														appvShellCommand.setCommandLine(notNull(lenodes.item(l).getTextContent()));
 													}
 													
+													if(lenodes.item(l).getNodeName().equalsIgnoreCase("appv:FriendlyName")){
+														appvShellCommand.setFriendlyName(notNull(lenodes.item(l).getTextContent()));
+													}
+													
 												}
 												if (hasShell) {
 													appvShellCommands.add(appvShellCommand);
-													System.out.print("S Ext:" + appvShellCommand.getName() + "\n");
+																										
 												}
 											}
 										}
@@ -456,8 +489,12 @@ public class ParseAppvManifest {
 
 							}
 							
-							
-							appvFileTypeAssociation.setAppvShellCommands(appvShellCommands);
+							if (hasShell) {
+								appvFileTypeAssociation.setAppvShellCommands(appvShellCommands);
+								appvFileTypeAssociation.setShellCommds(true);
+							} else{
+								appvFileTypeAssociation.setShellCommds(false);
+							}
 							//System.out.print("FTA:" + appvFileTypeAssociation.getProgId() + "Name: " + appvFileTypeAssociation.getName() + "\n" );
 						}
 						
